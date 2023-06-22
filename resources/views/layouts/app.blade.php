@@ -9,6 +9,10 @@
 </head>
 <body>
     <div>
+        {{--   because flush message save in session here write session    --}}
+        @if(session('status'))
+            <div style="background-color: #0b2e13;color:white"> {{ session('status') }}</div>
+        @endif
         @yield('content')
     </div>
 </body>

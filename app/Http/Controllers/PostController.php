@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -49,11 +50,11 @@ class PostController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -62,9 +63,23 @@ class PostController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePost $request)
     {
-        //
+//        one way to validation with Request class
+//        $request->validate([
+//            'title' => 'bail|required|min:5|max:10',
+//            'content' => 'required|min:10',
+//        ]);
+        $validate = $request->validated();
+//        $post = new BlogPost();
+//        $post->title = $validate['title'];
+//        $post->content = $validate['content'];
+//        $post->save();
+//        Mass assignment save
+        $post = BlogPost::create($validate);
+        // flush message save in session
+        $request->session()->flash('status','The blog post is created!');
+        return redirect()->route('posts.show', ['post' => $post->id]);
     }
 
     /**
@@ -77,7 +92,7 @@ class PostController extends Controller
     {
         // No need to this line because findOrFail do same that action
         // abort_if(!isset($this->posts[$id]), 404);
-        return view('posts.show', ['post' => BlogPost::findOfFail($id)]);
+        return view('posts.show', ['post' => BlogPost::findOrFail($id)]);
     }
 
     /**

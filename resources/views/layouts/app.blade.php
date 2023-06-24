@@ -10,12 +10,24 @@
     <title>Title - @yield('title')</title>
 </head>
 <body>
-    <div>
-        {{--   because flush message save in session here write session    --}}
-        @if(session('status'))
-            <div style="background-color: #0b2e13;color:white"> {{ session('status') }}</div>
-        @endif
-        @yield('content')
-    </div>
+<div
+    class="d-flex flex-column flex-md-row justify-content-md-between p-3 px-md-4 bg-white border-bottom shadow-sm mb-4">
+    <h5 class="my-0 mr-md-auto font-weight-normal">Laravel App</h5>
+    <nav class="my-2 my-md-0 mr-md-3">
+        <a class="p-3 text-dark" href="{{route('home.index')}}">Home</a>
+        <a class="p-3 text-dark" href="{{route('home.contact')}}">Contact</a>
+        <a class="p-3 text-dark" href="{{route('posts.index')}}">Blog Posts</a>
+        <a class="p-3 text-dark" href="{{route('posts.create')}}">Add New Post</a>
+    </nav>
+</div>
+<div class="container">
+    {{--   because flush message save in session here write session    --}}
+    @if(session('status'))
+        <div class="alert alert-success">
+        {{ session('status') }}
+        </div>
+    @endif
+    @yield('content')
+</div>
 </body>
 </html>

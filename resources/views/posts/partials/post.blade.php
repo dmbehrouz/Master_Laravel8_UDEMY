@@ -1,14 +1,11 @@
-@if($loop->even)
-    <div style="color: #007bff">{{$key}} {{ $variable }} {{$post->title}}</div>
-@else
-    <div>{{$key}} {{ $variable }}  {{$post->title}}</div>
-@endif
+<h3><a href="{{route('posts.show',['post'=>$post->id])}}" >{{$post->title}}</a></h3>
 
-<div>
+<div class="mb-3">
+    <a href="{{route('posts.edit',['post'=>$post->id])}}" class="btn btn-primary">Edit</a>
 {{--  Need to add method type in form tag and then use @method spoofing   --}}
-    <form action="{{ route('posts.destroy', ['post'=>$post->id]) }}" method="POST">
+    <form class="d-inline" action="{{ route('posts.destroy', ['post'=>$post->id]) }}" method="POST">
         @csrf
         @method('DELETE')
-        <input type="submit" value="Delete?">
+        <input type="submit" value="Delete?" class="btn btn-danger">
     </form>
 </div>

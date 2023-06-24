@@ -14,3 +14,8 @@ const mix = require('laravel-mix');
 mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .sourceMaps();
+
+// This mechanism for check last changes in css/js file and adding changes hash to path for prevent cached in production environment
+if(mix.inProduction()){
+    mix.version();
+}

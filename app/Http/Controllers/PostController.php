@@ -99,11 +99,11 @@ class PostController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function edit(int $id)
     {
-        //
+        return view('posts.edit', ['post' => BlogPost::findOrFail($id)]);
     }
 
     /**
@@ -111,21 +111,32 @@ class PostController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function update(Request $request, $id)
+    public function update(StorePost $request, $id)
     {
-        //
+//        dd($request);
+        $post = BlogPost::findOrFail($id);
+        $validate = $request->validated();
+        $post->fill($validate);
+        $post->save();
+
+        $request->session()->flash('status','The Post id '.$id. ' updated');
+        return redirect()->route('posts.show', ['post' => $post->id]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return View
      */
     public function destroy($id)
     {
-        //
+       $post = BlogPost::findOrFail($id);
+       $post->delete();
+        //use session  helper
+       session()->flash('status','The Post id '.$id. ' Deleted');
+       return redirect()->route('posts.index');
     }
 }

@@ -58,7 +58,9 @@ class PostController extends Controller
         // Eager load
 //        BlogPost::with('comments');
 //        dd(DB::getQueryLog());
-        return view('posts.index', ['posts' => BlogPost::withCount('comments')->get()]);
+        return view('posts.index', [
+            'posts' => BlogPost::withCount('comments')->get()
+        ]);
     }
 
     /**
@@ -110,7 +112,9 @@ class PostController extends Controller
     {
         // No need to this line because findOrFail do same that action
         // abort_if(!isset($this->posts[$id]), 404);
-        return view('posts.show', ['post' => BlogPost::findOrFail($id)]);
+        return view('posts.show', [
+            'post' => BlogPost::with('comments')->findOrFail($id)
+        ]);
     }
 
     /**

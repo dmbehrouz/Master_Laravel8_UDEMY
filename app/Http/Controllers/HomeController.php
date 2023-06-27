@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\BlogPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +36,11 @@ class HomeController extends Controller
 //            $query->where('created_at','>','2023-06-25 19:14:31');
 //        }])->get();//Add new_comments field to response every record
 //        dd($posts->toArray());
-        dd(DB::getQueryLog());
+        // If we want to see all related records we need like this; $author->profile
+//        $author = new Author();
+//        $test = $author->find(1);
+//        dd($test->profile()->get()->toArray());
+//        dd(DB::getQueryLog());
         return view('home.index');
     }
 

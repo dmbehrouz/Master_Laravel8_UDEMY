@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/',[HomeController::class,'home'])->name('home.index');;
+Route::get('/',[HomeController::class,'query_test'])->name('home.index');;
 //return view without variable method
 //Route::view('/','home.index');
 Route::get('/contact',[HomeController::class,'contact'])->name('home.contact');

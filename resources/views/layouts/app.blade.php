@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -18,6 +18,16 @@
         <a class="p-3 text-dark" href="{{route('home.contact')}}">Contact</a>
         <a class="p-3 text-dark" href="{{route('posts.index')}}">Blog Posts</a>
         <a class="p-3 text-dark" href="{{route('posts.create')}}">Add New Post</a>
+        @guest
+            <a class="p-3 text-dark" href="{{route('register')}}">Register</a>
+            <a class="p-3 text-dark" href="{{route('login')}}">Login</a>
+        @else
+            <a class="p-3 text-dark" href="{{route('logout')}}"
+               onclick="event.preventDefault();document.getElementById('logout-form').submit()">Log-Out({{\Illuminate\Support\Facades\Auth::user()->name}})</a>
+            <form action="{{route('logout')}}" method="POST" id="logout-form" style="display: none">
+                @csrf
+            </form>
+        @endguest
     </nav>
 </div>
 <div class="container">

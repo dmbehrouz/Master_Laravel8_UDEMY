@@ -10,31 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
-//    private $posts = [
-//        1 => [
-//            'title' => 'Intro to Laravel',
-//            'content' => 'This is a short intro to Laravel',
-//            'is_new' => true,
-//            'has_comments' => true,
-//        ],
-//        2 => [
-//            'title' => 'Intro to PHP',
-//            'content' => 'This is a short intro to PHP',
-//            'is_new' => false
-//        ],
-//        3 => [
-//            'title' => 'Intro to GoLang',
-//            'content' => 'This is a short intro to GoLang',
-//            'is_new' => false
-//        ],
-//        4 => [
-//            'title' => 'Intro to .NET',
-//            'content' => 'This is a short intro to .NET',
-//            'is_new' => false
-//        ],
-//
-//    ];
-
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['create','edit','destroy','update']);
+    }
 
     /**
      * Display a listing of the resource.

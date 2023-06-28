@@ -19,8 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/',[HomeController::class,'query_test'])->name('home.index');;
 //return view without variable method
 //Route::view('/','home.index');
-Route::get('/contact',[HomeController::class,'contact'])->name('home.contact');
-Route::get('/single', AboutController::class)->name('about');
+
 
 $posts = [
     1 => [
@@ -108,3 +107,9 @@ Route::prefix('/func')->name('func.')->group(function() use($posts){
 Route::get('/param/{id_pattern}', function ($id) {
     echo $id;
 });
+
+Auth::routes();
+
+Route::get('/query_test', [App\Http\Controllers\HomeController::class, 'query_test'])->name('query_test');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/contact',[HomeController::class,'contact'])->name('home.contact');

@@ -5,12 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Author;
 use App\Models\BlogPost;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
-    public function home()
+
+    public function __construct()
     {
+        $this->middleware('auth')->except(['contact','query_test']);
+    }
+
+    public function index()
+    {
+//        dd(Auth::user   ());
         return view('home.index');
     }
 

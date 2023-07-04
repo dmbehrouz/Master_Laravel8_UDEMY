@@ -7,12 +7,13 @@ use App\Models\BlogPost;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->only(['create','edit','destroy','update']);
+        $this->middleware('auth')->only(['create', 'edit', 'destroy', 'update']);
     }
 
     /**
@@ -27,7 +28,7 @@ class PostController extends Controller
 
         //Log Query
 //        DB::connection()->enableQueryLog();
-          // Lazy load
+        // Lazy load
 //        $posts = BlogPost::all();
 //        foreach ($posts as $post){
 //            foreach ($post->comments as $comment){
@@ -49,8 +50,9 @@ class PostController extends Controller
      */
     public function create()
     {
-        BlogPost::whereHas('comments',function($query){
-            $query->where('content','like','%Create%');
+        $this->authorize('create');
+        BlogPost::whereHas('comments', function ($query) {
+            $query->where('content', 'like', '%Create%');
         })->get();
 
         return view('posts.create');
@@ -77,7 +79,7 @@ class PostController extends Controller
 //        Mass assignment save
         $post = BlogPost::create($validate);
         // flush message save in session
-        $request->session()->flash('status','The blog post is created!');
+        $request->session()->flash('status', 'The blog post is created!');
         return redirect()->route('posts.show', ['post' => $post->id]);
     }
 
@@ -104,7 +106,14 @@ class PostController extends Controller
      */
     public function edit(int $id)
     {
-        return view('posts.edit', ['post' => BlogPost::findOrFail($id)]);
+        $post = BlogPost::findOrFail($id);
+//        if( Gate::denies('update-post', $post) ){
+//            abort(403, 'You are not permission HONEY ;)');
+//        }
+        // We should this helper instead above lines(Gate facade)
+        $this->authorize('posts.update', $post);
+
+        return view('posts.edit', ['post' => $post ]);
     }
 
     /**
@@ -118,11 +127,16 @@ class PostController extends Controller
     {
 //        dd($request);
         $post = BlogPost::findOrFail($id);
+//        if( Gate::denies('posts.update', $post) ){
+//            abort(403, 'You are not permission HONEY ;)');
+//        }
+        // OR use this
+        $this->authorize('posts.update', $post);
         $validate = $request->validated();
         $post->fill($validate);
         $post->save();
 
-        $request->session()->flash('status','The Post id '.$id. ' updated');
+        $request->session()->flash('status', 'The Post id ' . $id . ' updated');
         return redirect()->route('posts.show', ['post' => $post->id]);
     }
 
@@ -134,10 +148,11 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-       $post = BlogPost::findOrFail($id);
-       $post->delete();
+        $post = BlogPost::findOrFail($id);
+        $this->authorize('posts.delete',$post);
+        $post->delete();
         //use session  helper
-       session()->flash('status','The Post id '.$id. ' Deleted');
-       return redirect()->route('posts.index');
+        session()->flash('status', 'The Post id ' . $id . ' Deleted');
+        return redirect()->route('posts.index');
     }
 }

@@ -113,3 +113,4 @@ Auth::routes();
 Route::get('/query_test', [App\Http\Controllers\HomeController::class, 'query_test'])->name('query_test');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/contact',[HomeController::class,'contact'])->name('home.contact');
+Route::get('/secret',[HomeController::class,'secret'])->name('secret')->middleware('can:middleware-gate');

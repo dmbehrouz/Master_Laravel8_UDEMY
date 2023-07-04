@@ -16,6 +16,11 @@ class BlogPost extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     //Handle event model
     public static function boot()
     {
@@ -30,4 +35,6 @@ class BlogPost extends Model
             $bp->comments()->restore();
         });
     }
+
+
 }

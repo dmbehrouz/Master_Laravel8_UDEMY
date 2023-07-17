@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -38,9 +39,16 @@ class PostController extends Controller
         // Eager load
 //        BlogPost::with('comments');
 //        dd(DB::getQueryLog());
-        return view('posts.index', [
-            'posts' => BlogPost::withCount('comments')->get()
-        ]);
+        $params = [
+            //Use scope instead add orderBy repeat.
+            // take add limit to query
+            'posts' => BlogPost::reorderShow()->withCount('comments')->get(),
+            'most_commented' => BlogPost::mostCommented()->take(5)->get(),
+            'most_active' => User::withMostBlogPosts()->take(5)->get(),
+            'most_active_last_month' => User::withMostBlogPostsLastMonth()->take(5)->get(),
+        ];
+//        dd(DB::getQueryLog());
+        return view('posts.index',$params);
     }
 
     /**
@@ -50,6 +58,7 @@ class PostController extends Controller
      */
     public function create()
     {
+        //Because laravel map methods of policy class  to exist method in crud
         $this->authorize('create');
         BlogPost::whereHas('comments', function ($query) {
             $query->where('content', 'like', '%Create%');
@@ -72,6 +81,8 @@ class PostController extends Controller
 //            'content' => 'required|min:10',
 //        ]);
         $validate = $request->validated();
+        //Get user id
+        $validate['user_id'] = $request->user()->id;
 //        $post = new BlogPost();
 //        $post->title = $validate['title'];
 //        $post->content = $validate['content'];
@@ -94,7 +105,12 @@ class PostController extends Controller
         // No need to this line because findOrFail do same that action
         // abort_if(!isset($this->posts[$id]), 404);
         return view('posts.show', [
-            'post' => BlogPost::with('comments')->findOrFail($id)
+             'post' => BlogPost::with('comments')->findOrFail($id),
+            // Call scope like static method.
+            //Add local query inline. this sub query for inside join used
+//            'post' => BlogPost::with(['comments' => function($query){
+//                return $query->reorderShowComment();
+//            }])->findOrFail($id)
         ]);
     }
 
@@ -111,7 +127,7 @@ class PostController extends Controller
 //            abort(403, 'You are not permission HONEY ;)');
 //        }
         // We should this helper instead above lines(Gate facade)
-        $this->authorize('posts.update', $post);
+        $this->authorize('update', $post);
 
         return view('posts.edit', ['post' => $post ]);
     }
@@ -131,7 +147,7 @@ class PostController extends Controller
 //            abort(403, 'You are not permission HONEY ;)');
 //        }
         // OR use this
-        $this->authorize('posts.update', $post);
+        $this->authorize('update', $post);
         $validate = $request->validated();
         $post->fill($validate);
         $post->save();
@@ -149,7 +165,7 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = BlogPost::findOrFail($id);
-        $this->authorize('posts.delete',$post);
+        $this->authorize('delete',$post);
         $post->delete();
         //use session  helper
         session()->flash('status', 'The Post id ' . $id . ' Deleted');

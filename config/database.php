@@ -56,6 +56,7 @@ return [
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'prefix_indexes' => true,
+            // this config add some strict of mysql like ONLY_FULL_GROUP_BY when i use having or group by statement. set to false
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([

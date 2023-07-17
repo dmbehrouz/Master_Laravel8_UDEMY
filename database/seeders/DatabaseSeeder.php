@@ -5,7 +5,9 @@ namespace Database\Seeders;
 use App\Models\BlogPost;
 use App\Models\Comment;
 use App\Models\User;
+use Illuminate\Console\Command;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -29,6 +31,7 @@ class DatabaseSeeder extends Seeder
         //            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
         //            'remember_token' => Str::random(10),
         //        ]);
+        Artisan::call("migrate:fresh");
 
         $this->call([
             UserSeeder::class,

@@ -51,7 +51,7 @@ class AuthServiceProvider extends ServiceProvider
         // Global Gate
         // Execute before all custom gate. $ability for check specific custom gate
         Gate::before(function ($user,$ability){
-            if($user->is_admin && in_array($ability,['update'])){
+            if($user->is_admin && in_array($ability,['update','create','delete'])){
                 return true;
             }
         });

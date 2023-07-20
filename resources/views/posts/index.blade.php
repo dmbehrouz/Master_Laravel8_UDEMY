@@ -19,45 +19,49 @@
         <div class="col-4">
             <div class="container">
                 <div class="row">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Most Commented</h5>
-                            <p class="card-text text-muted mb-2">What people are currently talking about </p>
-                        </div>
-                        <ul class="list-group list-group-flush">
+                    {{--                    <div class="card" style="width: 18rem;">--}}
+                    {{--                        <div class="card-body">--}}
+                    {{--                            <h5 class="card-title">Most Commented</h5>--}}
+                    {{--                            <p class="card-text text-muted mb-2">What people are currently talking about </p>--}}
+                    {{--                        </div>--}}
+                    {{--                        <ul class="list-group list-group-flush">--}}
+                    {{--                            @foreach($most_commented as $post)--}}
+                    {{--                                <li class="list-group-item"><a--}}
+                    {{--                                        href="{{ route('posts.show',['post'=>$post->id]) }}">{{ $post->title }}</a></li>--}}
+                    {{--                            @endforeach--}}
+                    {{--                        </ul>--}}
+                    {{--                    </div>--}}
+{{--                    <x-card title="Most Commented" subTitle="What people are currently talking about">--}}
+{{--                        <x-slot name="items">--}}
+{{--                            @foreach($most_commented as $post)--}}
+{{--                                <li class="list-group-item"><a--}}
+{{--                                        href="{{ route('posts.show',['post'=>$post->id]) }}">{{ $post->title }}</a></li>--}}
+{{--                            @endforeach--}}
+{{--                        </x-slot>--}}
+{{--                        @slot('items')--}}
+{{--                            @foreach($most_commented as $post)--}}
+{{--                                <li class="list-group-item"><a--}}
+{{--                                        href="{{ route('posts.show',['post'=>$post->id]) }}">{{ $post->title }}</a></li>--}}
+{{--                            @endforeach--}}
+{{--                        @endslot--}}
+{{--                    </x-card>--}}
+
+                    <x-card title="Most Commented" subTitle="What people are currently talking about">
+                        <x-slot name="items">
                             @foreach($most_commented as $post)
-                                <li class="list-group-item"><a
-                                        href="{{ route('posts.show',['post'=>$post->id]) }}">{{ $post->title }}</a></li>
+                                <li class="list-group-item"><a href="{{ route('posts.show', ['post' => $post->id]) }}">{{ $post->title }}</a></li>
                             @endforeach
-                        </ul>
-                    </div>
+                        </x-slot>
+                    </x-card>
                 </div>
                 <div class="row mt-4">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Most Actives</h5>
-                            <p class="card-text text-muted mb-2">Users with most posts written </p>
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            @foreach($most_active as $user)
-                                <li class="list-group-item">{{ $user->name }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                    <x-card title="Most Actives" subTitle="Users with most posts written "
+                            :items="collect($most_active)->pluck('name')"/>
                 </div>
 
                 <div class="row mt-4">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Most Actives Last Month</h5>
-                            <p class="card-text text-muted mb-2">Users with most posts written in the last month </p>
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            @foreach($most_active_last_month as $user)
-                                <li class="list-group-item">{{ $user->name }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                    <x-card title="Most Actives Last Month" subTitle="Users with most posts written in the last month "
+                            :items="collect($most_active_last_month)->pluck('name')"/>
                 </div>
             </div>
         </div>

@@ -7,10 +7,11 @@
         </del>
     @endif
 </h3>
-<p>
-    Added {{ $post->created_at->diffForHumans() }}
-    by {{ $post->user->name }}
-</p>
+
+@php($params['name'] = $post->user->name)
+@php($params['date'] = $post->created_at)
+<x-updateComment :params="$params" />
+
 @if($post->comments_count)
     <p>{{$post->comments_count}} Comment</p>
 @else

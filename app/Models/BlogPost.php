@@ -48,7 +48,7 @@ class BlogPost extends Model
 
     public function scopeReorderShow(Builder $query)
     {
-        return $query->orderBy(static::CREATED_AT,'ASC');
+        return $query->orderBy(static::CREATED_AT,'DESC');
     }
 
     public function scopeMostCommented(Builder $query)

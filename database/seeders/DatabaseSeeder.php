@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Seeder;
+use Illuminate\Filesystem\Cache;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -32,7 +33,7 @@ class DatabaseSeeder extends Seeder
         //            'remember_token' => Str::random(10),
         //        ]);
         Artisan::call("migrate:fresh");
-
+        Cache::tags(['blog-post'])->flush();
         $this->call([
             UserSeeder::class,
             BlogPostSeeder::class,

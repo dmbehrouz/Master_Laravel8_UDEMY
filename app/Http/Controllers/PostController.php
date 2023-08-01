@@ -6,9 +6,7 @@ use App\Http\Requests\StorePost;
 use App\Models\BlogPost;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Cache;
 
 class PostController extends Controller
 {
@@ -24,7 +22,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        // talke method used for define count of retrieve record
+        // take method used for define count of retrieve record
 //        return view('posts.index', ['posts' => BlogPost::orderBy('created_at','desc')->take(5)->get()]);
 
         //Log Query
@@ -39,16 +37,28 @@ class PostController extends Controller
         // Eager load
 //        BlogPost::with('comments');
 //        dd(DB::getQueryLog());
+
+        $mostCommented = Cache::tags(['blog-post'])->remember('blog-post-commented', 60, function () {
+            return BlogPost::mostCommented()->take(5)->get();
+        });
+
+        $mostActive = Cache::remember('users-most-active', 60, function () {
+            return User::withMostBlogPosts()->take(5)->get();
+        });
+
+        $mostActiveLastMonth = Cache::remember('users-most-active-last-month', 60, function () {
+            return User::withMostBlogPostsLastMonth()->take(5)->get();
+        });
         $params = [
             //Use scope instead add orderBy repeat.
             // take add limit to query
             'posts' => BlogPost::reorderShow()->withCount('comments')->get(),
-            'most_commented' => BlogPost::mostCommented()->take(5)->get(),
-            'most_active' => User::withMostBlogPosts()->take(5)->get(),
-            'most_active_last_month' => User::withMostBlogPostsLastMonth()->take(5)->get(),
+            'most_commented' => $mostCommented,
+            'most_active' => $mostActive,
+            'most_active_last_month' => $mostActiveLastMonth,
         ];
 //        dd(DB::getQueryLog());
-        return view('posts.index',$params);
+        return view('posts.index', $params);
     }
 
     /**
@@ -104,8 +114,44 @@ class PostController extends Controller
     {
         // No need to this line because findOrFail do same that action
         // abort_if(!isset($this->posts[$id]), 404);
+
+        $blogPost = Cache::tags(['blog-post'])->remember("blog-post-{$id}", 60, function () use ($id) {
+            return BlogPost::with('comments')->findOrFail($id);
+        });
+
+        $sessionId = session()->getId();
+        $counterKey = "blog-post-{$id}-counter";
+        $usersKey = "blog-post-{$id}-users";
+        $users = Cache::tags(['blog-post'])->get($usersKey, []);
+        $usersUpdate = [];
+        $difference = 0;
+        $now = now();
+
+        foreach ($users as $session => $lastVisit) {
+            if ($now->diffInMinutes($lastVisit) >= 1) {
+                $difference--;
+            } else {
+                $usersUpdate[$session] = $lastVisit;
+            }
+        }
+
+        if (!array_key_exists($sessionId, $users) || $now->diffInMinutes($users[$sessionId]) >= 1) {
+            $difference++;
+        }
+
+        $usersUpdate[$sessionId] = $now;
+        Cache::tags(['blog-post'])->forever($usersKey,$usersUpdate);
+        if(Cache::tags(['blog-post'])->has($counterKey)){
+            Cache::tags(['blog-post'])->forever($counterKey,1);
+        }else{
+            Cache::tags(['blog-post'])->increment($counterKey,$difference);
+        }
+
+        $counter = Cache::tags(['blog-post'])->get($counterKey);
+
         return view('posts.show', [
-             'post' => BlogPost::with('comments')->findOrFail($id),
+            'post' => $blogPost,
+            'counter' => $counter,
             // Call scope like static method.
             //Add local query inline. this sub query for inside join used
 //            'post' => BlogPost::with(['comments' => function($query){
@@ -129,7 +175,7 @@ class PostController extends Controller
         // We should this helper instead above lines(Gate facade)
         $this->authorize('update', $post);
 
-        return view('posts.edit', ['post' => $post ]);
+        return view('posts.edit', ['post' => $post]);
     }
 
     /**
@@ -165,7 +211,7 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = BlogPost::findOrFail($id);
-        $this->authorize('delete',$post);
+        $this->authorize('delete', $post);
         $post->delete();
         //use session  helper
         session()->flash('status', 'The Post id ' . $id . ' Deleted');

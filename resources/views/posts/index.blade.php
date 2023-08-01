@@ -19,33 +19,6 @@
         <div class="col-4">
             <div class="container">
                 <div class="row">
-                    {{--                    <div class="card" style="width: 18rem;">--}}
-                    {{--                        <div class="card-body">--}}
-                    {{--                            <h5 class="card-title">Most Commented</h5>--}}
-                    {{--                            <p class="card-text text-muted mb-2">What people are currently talking about </p>--}}
-                    {{--                        </div>--}}
-                    {{--                        <ul class="list-group list-group-flush">--}}
-                    {{--                            @foreach($most_commented as $post)--}}
-                    {{--                                <li class="list-group-item"><a--}}
-                    {{--                                        href="{{ route('posts.show',['post'=>$post->id]) }}">{{ $post->title }}</a></li>--}}
-                    {{--                            @endforeach--}}
-                    {{--                        </ul>--}}
-                    {{--                    </div>--}}
-{{--                    <x-card title="Most Commented" subTitle="What people are currently talking about">--}}
-{{--                        <x-slot name="items">--}}
-{{--                            @foreach($most_commented as $post)--}}
-{{--                                <li class="list-group-item"><a--}}
-{{--                                        href="{{ route('posts.show',['post'=>$post->id]) }}">{{ $post->title }}</a></li>--}}
-{{--                            @endforeach--}}
-{{--                        </x-slot>--}}
-{{--                        @slot('items')--}}
-{{--                            @foreach($most_commented as $post)--}}
-{{--                                <li class="list-group-item"><a--}}
-{{--                                        href="{{ route('posts.show',['post'=>$post->id]) }}">{{ $post->title }}</a></li>--}}
-{{--                            @endforeach--}}
-{{--                        @endslot--}}
-{{--                    </x-card>--}}
-
                     <x-card title="Most Commented" subTitle="What people are currently talking about">
                         <x-slot name="items">
                             @foreach($most_commented as $post)

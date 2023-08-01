@@ -41,6 +41,8 @@
         </x-updateComment>
     @endif
 
+    <p>Currently read by {{$counter}} people</p>
+
     <h4>Comments HAAAAAAA</h4>
     @forelse($post->comments as $comment)
         <p>{{  $comment->content }}</p>

@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class BlogPost extends Model
 {
-    protected $fillable = ['title' , 'content', 'user_id'];
-    use HasFactory,SoftDeletes;
+    protected $fillable = ['title', 'content', 'user_id'];
+    use HasFactory, SoftDeletes;
 
     public function comments()
     {
@@ -32,28 +33,32 @@ class BlogPost extends Model
         parent::boot();
         //Global scope with Anonymous Global Scopes
         //static::addGlobalScope('ancient', function (Builder $query) {
-           // $query->where('created_at', '<', now()->subYears(2000));
+        // $query->where('created_at', '<', now()->subYears(2000));
         //});
 
         //Because we add comments to blog post and when i delete blog post must deleted all comments before that
         // we will use this model event or use field with cascade rule foreign key
-        static::deleting(function(BlogPost $bp){
+        static::deleting(function (BlogPost $bp) {
             $bp->comments()->delete();
         });
         //Restore all relations record comment too.
-        static::restoring(function(BlogPost $bp){
+        static::restoring(function (BlogPost $bp) {
             $bp->comments()->restore();
+        });
+        //When updating on model
+        static::updating(function (BlogPost $bp) {
+            Cache::forget("blog-post-{$bp->id}");
         });
     }
 
     public function scopeReorderShow(Builder $query)
     {
-        return $query->orderBy(static::CREATED_AT,'DESC');
+        return $query->orderBy(static::CREATED_AT, 'DESC');
     }
 
     public function scopeMostCommented(Builder $query)
     {
         // withCounts add new field to response with tableName_count
-        return $query->withCount('comments')->orderBy('comments_count','DESC');
+        return $query->withCount('comments')->orderBy('comments_count', 'DESC');
     }
 }
